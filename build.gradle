@@ -1,0 +1,64 @@
+buildscript {
+    repositories {
+        mavenLocal()
+    }
+    dependencies {
+        classpath group: 'commons-codec', name: 'commons-codec', version: '1.2'
+    }
+}
+
+plugins {
+    id 'idea'
+}
+
+//描述信息
+description = 'The shared API for the application'
+
+allprojects {
+    group = 'org.game'
+    version = '1.0-SNAPSHOT'
+
+    tasks.withType(JavaCompile) {
+        options.encoding="UTF-8"
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+
+    repositories {
+        mavenLocal()
+    }
+
+    dependencies {
+        testImplementation 'junit:junit:4.11'
+    }
+
+    sourceCompatibility = '1.8'
+
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                from(components.java)
+            }
+        }
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+}
+
+task hello {
+    doLast {
+        println 'Hello world!'
+    }
+}
+
+task encode {
+    doLast {
+        def byte[] encodedString = new Base64().encode('hello world\n'.getBytes())
+        println new String(encodedString)
+    }
+}

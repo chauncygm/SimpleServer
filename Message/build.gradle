@@ -1,0 +1,11 @@
+group 'org.game'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':Core')
+}

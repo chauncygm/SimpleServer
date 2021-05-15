@@ -1,0 +1,16 @@
+﻿log
+logs
+*.iml
+.idea
+.gradle
+gradle
+Client/bin
+Client/build
+ConfigData/bin
+ConfigTool/build
+Core/build
+GameServer/build/classes
+GameServer/bin
+GameServer/build
+Message/build
+ConfigData/build

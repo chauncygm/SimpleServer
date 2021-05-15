@@ -1,0 +1,58 @@
+plugins {
+    id 'java-library'
+    id 'application'
+}
+
+group 'org.game'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+configurations {
+    mybatisGenerator
+}
+
+dependencies {
+    implementation project(':Core')
+    implementation project(':Message')
+    implementation 'redis.clients:jedis:3.6.0'
+    implementation 'com.lmax:disruptor:3.4.3'
+    implementation 'com.google.guava:guava:30.0-jre'
+
+    mybatisGenerator 'org.mybatis.generator:mybatis-generator-core:1.4.0'
+    mybatisGenerator 'mysql:mysql-connector-java:8.0.24'
+    mybatisGenerator 'tk.mybatis:mapper:4.1.5'
+}
+
+def getDbProperties = {
+    def properties = new Properties()
+    file("src/main/resources/jdbc.properties").withInputStream { inputStream ->
+        properties.load(inputStream)
+    }
+    return properties
+}
+
+task mybatisGenerate {
+    def properties = getDbProperties()
+    ant.properties['targetProject'] = projectDir.path
+    ant.properties['driverClass'] = properties.getProperty("jdbc.driverClass")
+    ant.properties['url'] = properties.getProperty("jdbc.url")
+    ant.properties['username'] = properties.getProperty("jdbc.username")
+    ant.properties['password'] = properties.getProperty("jdbc.password")
+    ant.taskdef(
+            name: 'mbgenerator',
+            classname: 'org.mybatis.generator.ant.GeneratorAntTask',
+            classpath: configurations.mybatisGenerator.asPath
+    )
+    ant.mbgenerator(overwrite: true, configfile: projectDir.path + '/src/main/resources/generatorConfig.xml', verbose: true) {
+        propertyset {
+            propertyref(name: 'username')
+            propertyref(name: 'driverClass')
+            propertyref(name: 'url')
+            propertyref(name: 'password')
+        }
+    }
+}

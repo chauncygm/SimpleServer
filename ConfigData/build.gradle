@@ -1,0 +1,30 @@
+plugins {
+    id 'application'
+}
+
+group 'org.game'
+version '1.0-SNAPSHOT'
+
+application {
+    mainClass = 'Main'
+}
+
+compileJava {
+    options.incremental = true
+    options.fork = true
+    options.failOnError = false
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':Core')
+    implementation 'org.projectlombok:lombok:1.18.16'
+}
+
+test {
+    useJUnitPlatform()
+}

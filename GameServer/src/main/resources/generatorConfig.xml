@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+<!--
+defaultModelType
+1，conditional：类似hierarchical；
+2，flat：所有内容（主键，blob）等全部生成在一个对象中；
+3，hierarchical：主键生成一个  XXKey对象(key class)，Blob等单独生成一个对象，其他简单属性在一个对象中(record class)
+-->
+<context id="Mysql" targetRuntime="MyBatis3" defaultModelType="hierarchical">
+    <commentGenerator>
+        <property name="suppressAllComments" value="true"></property>
+        <property name="suppressDate" value="true"></property>
+        <property name="javaFileEncoding" value="utf-8"/>
+    </commentGenerator>
+
+    <jdbcConnection driverClass="${driverClass}"
+                    connectionURL="${url}"
+                    userId="${username}"
+                    password="${password}">
+        <!-- 如果是使用的connector/J8.0以上版本，需使用此配置表明只导出连接中指定的数据库的表 -->
+        <property name ="nullCatalogMeansCurrent" value="true"/>
+    </jdbcConnection>
+
+    <javaTypeResolver>
+        <property name="forceBigDecimals" value="false"/>
+    </javaTypeResolver>
+
+    <javaModelGenerator targetPackage="game.db.beans" targetProject="src/main/java">
+        <property name="enableSubPackages" value="true"></property>
+        <property name="trimStrings" value="true"></property>
+    </javaModelGenerator>
+
+    <sqlMapGenerator targetPackage="game.db.sqlmap" targetProject="src/main/java">
+        <property name="enableSubPackages" value="true"></property>
+    </sqlMapGenerator>
+
+    <javaClientGenerator targetPackage="game.db.mapper" targetProject="src/main/java" type="XMLMAPPER">
+        <property name="enableSubPackages" value="true"/>
+    </javaClientGenerator>
+
+    <!-- sql占位符，表示所有的表 -->
+    <table tableName="%"></table>
+</context>
+</generatorConfiguration>
