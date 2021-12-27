@@ -8,7 +8,7 @@
     <appenders>
         <!--这个输出控制台的配置-->
         <console name="console" target="SYSTEM_OUT">
-            <PatternLayout pattern="[%p] %d{HH:mm:ss.SSS} - %l - %m%n"/>
+            <PatternLayout charset="UTF-8" pattern="[%p] %d{HH:mm:ss.SSS} - %l - %m%n"/>
         </console>
     </appenders>
 

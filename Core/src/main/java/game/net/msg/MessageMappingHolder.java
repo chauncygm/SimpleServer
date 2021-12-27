@@ -27,11 +27,11 @@ public class MessageMappingHolder {
     public static void registerMsgDict(Map<Integer, Message> map) {
         for (Message message : map.values()) {
             if (!registerMsgDict(message)) {
-                logger.error("注册协议失败！");
+                logger.error("注册协议失败!");
                 System.exit(0);
             }
         }
-        logger.info("注册协议成功！");
+        logger.info("注册协议成功!");
     }
 
     /**

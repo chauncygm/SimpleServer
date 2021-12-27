@@ -63,10 +63,11 @@ public class NettyServer {
         future.addListener((f) -> {
            if (f.isSuccess()) {
                listen = true;
-               logger.info("{} 监听端口[{}]成功", name, port);
-           } else {
+           }
+             else {
                listen = false;
                logger.info("{} 监听端口[{}]失败", name, port);
+               System.exit(-1);
            }
         });
     }

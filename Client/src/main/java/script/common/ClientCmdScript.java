@@ -6,6 +6,8 @@ import client.script.ScriptDefine;
 import client.struct.Player;
 import client.struct.PlayerManager;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import msg.login.LoginMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,6 +94,14 @@ public class ClientCmdScript implements ICmdScript {
         return "ok";
     }
 
+    private String addplayer() {
+        Player player = new Player(atomicInteger.incrementAndGet(), ClientManager.SERVER_IP, ClientManager.SERVER_PORT);
+        PlayerManager.getInstance().cachePlayer(player);
+        boolean result = player.connect();
+        logger.info("玩家[{}]连接: {}", player.getId(), result);
+        return "";
+    }
+
     private String status() {
         ConcurrentHashMap<Long, Player> playerMap = PlayerManager.getInstance().getPlayerMap();
         logger.info("客户端连接数:" + playerMap.size());
@@ -100,5 +110,18 @@ public class ClientCmdScript implements ICmdScript {
             logger.info("玩家ID: {}, 连接状态,open: {}, active: {}", entry.getKey(), channel.isOpen(), channel.isActive());
         }
         return "ok";
+    }
+
+    private String sendmsg() {
+        Player player = PlayerManager.getInstance().getPlayer(1);
+        logger.info("{}", player);
+        LoginMessage.ReqLogin.Builder builder = LoginMessage.ReqLogin.newBuilder();
+        builder.setAccount("abc");
+        builder.setRoleId(111);
+        ChannelHandlerContext ctx = player.getCtx();
+        if (ctx.channel().isActive()) {
+            player.getCtx().channel().writeAndFlush(builder.build());
+        }
+        return "";
     }
 }

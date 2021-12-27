@@ -2,6 +2,7 @@ package script.common.cmd;
 
 import game.script.IScript;
 import game.script.ScriptDefine;
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +18,8 @@ public class CmdScript implements IScript {
 
     private static final Logger logger = LoggerFactory.getLogger(CmdScript.class);
 
+    private static final String CMD_PRIFIX = "#";
+
     @Override
     public int getId() {
         return ScriptDefine.SCRIPT_CMD;
@@ -25,10 +28,7 @@ public class CmdScript implements IScript {
     @Override
     public Object call(Object... objs) {
         String methodStr = (String) objs[0];
-        if (methodStr == null || methodStr.trim().isEmpty()) {
-            return false;
-        }
-        if (!methodStr.startsWith("&") || methodStr.length() == 1) {
+        if (Strings.isBlank(methodStr) || !methodStr.startsWith(CMD_PRIFIX) || methodStr.length() == 1) {
             logger.error("错误的命令格式：{}", methodStr);
             return false;
         }
@@ -67,6 +67,12 @@ public class CmdScript implements IScript {
     }
 
     private String test() {
+
+        String s = Long.toHexString(0L);
+        logger.info(s);
+        logger.info("abc");
         return "server test";
     }
+
+
 }

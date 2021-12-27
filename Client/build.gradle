@@ -1,5 +1,13 @@
+plugins {
+    id 'application'
+}
+
 group 'org.game'
 version '1.0-SNAPSHOT'
+
+application {
+    mainClass = 'client.Client'
+}
 
 repositories {
     mavenLocal()
