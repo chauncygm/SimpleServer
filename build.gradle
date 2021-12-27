@@ -1,14 +1,21 @@
+//需要外部依赖的，在此处引入，必须放在脚本插件前面
 buildscript {
     repositories {
         mavenLocal()
     }
     dependencies {
-        classpath group: 'commons-codec', name: 'commons-codec', version: '1.2'
+        classpath 'commons-codec:commons-codec:1.2'
     }
 }
 
 plugins {
     id 'idea'
+}
+
+tasks.withType(JavaCompile) {
+    //@See https://docs.gradle.org/current/userguide/performance.html#suggestions_for_java_projects
+    options.fork = true             //启用独立后台进程编译
+    options.incremental = true      //启用增量编译
 }
 
 //描述信息
@@ -25,6 +32,7 @@ allprojects {
 
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'java-library'
     apply plugin: 'maven-publish'
 
     repositories {
@@ -33,6 +41,15 @@ subprojects {
 
     dependencies {
         testImplementation 'junit:junit:4.11'
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding="UTF-8"
+    }
+
+    java {
+        withJavadocJar()
+        withSourcesJar()
     }
 
     sourceCompatibility = '1.8'
@@ -44,21 +61,19 @@ subprojects {
             }
         }
     }
-
-    tasks.withType(JavaCompile) {
-        options.encoding = 'UTF-8'
-    }
 }
 
-task hello {
-    doLast {
-        println 'Hello world!'
-    }
-}
-
-task encode {
-    doLast {
-        def byte[] encodedString = new Base64().encode('hello world\n'.getBytes())
-        println new String(encodedString)
-    }
-}
+//task hello {
+//    doLast {
+//        println 'Hello world!'
+//    }
+//}
+//
+//
+//import org.apache.commons.codec.binary.Base64
+//task encode {
+//    doLast {
+//        def byte[] encodedString = new Base64().encode('hello world\n'.getBytes())
+//        println new String(encodedString)
+//    }
+//}

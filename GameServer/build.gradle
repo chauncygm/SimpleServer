@@ -1,10 +1,14 @@
 plugins {
-    id 'java-library'
-    id 'application'
+    id 'java-library'       //java库插件，用于配置依赖项相关，api及implementation
+    id 'application'        //运行main程序插件
 }
 
 group 'org.game'
 version '1.0-SNAPSHOT'
+
+application {
+    mainClass = 'game.Server'
+}
 
 repositories {
     mavenLocal()
@@ -35,7 +39,9 @@ def getDbProperties = {
     return properties
 }
 
-task mybatisGenerate {
+tasks.register("mybatisGenerate") {
+//不使用下面这种方式避免其他构建执行此任务
+//task mybatisGenerate {
     def properties = getDbProperties()
     ant.properties['targetProject'] = projectDir.path
     ant.properties['driverClass'] = properties.getProperty("jdbc.driverClass")

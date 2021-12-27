@@ -23,7 +23,7 @@ public class MsgHandler extends SimpleChannelInboundHandler<MessageLite> {
 
     private static AtomicInteger atomicInteger = new AtomicInteger(0);
 
-    private int nodeType;
+    private final int nodeType;
 
     public MsgHandler(int nodeType) {
         super();
@@ -38,7 +38,11 @@ public class MsgHandler extends SimpleChannelInboundHandler<MessageLite> {
             logger.error("未找到协议对应的处理脚本: {}, {}", msg.getClass(), messageId);
             return;
         }
-        handlerScript.doAction(ctx, msg);
+        try {
+            handlerScript.doAction(ctx, msg);
+        } catch (Exception e) {
+            logger.error("协议处理失败", e);
+        }
     }
 
     @Override
