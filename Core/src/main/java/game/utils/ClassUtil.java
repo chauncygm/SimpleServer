@@ -12,12 +12,16 @@ import java.net.URLDecoder;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 
 /**
  * @author  gongshengjun
  * @date    2020/11/11 16:31
  */
 public class ClassUtil {
+
+
+    private static final JavaCompiler SYSTEM_COMPILER = ToolProvider.getSystemJavaCompiler();
 
     /**
      * @param name          文件名
@@ -35,27 +39,23 @@ public class ClassUtil {
         }
         boolean reload = (c != null);
 
-        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
         ScriptClassLoader loader = new ScriptClassLoader();
         boolean success;
-        try (StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, null)) {
+        final DiagnosticCollector<? super JavaFileObject> diagnosticCollector = new DiagnosticCollector<>();
+        try (StandardJavaFileManager fileManager = SYSTEM_COMPILER.getStandardFileManager(null, null, null)) {
             JavaFileObject jFile = new JavaSourceFromString(name, code);
             List<JavaFileObject> jFiles = new ArrayList<>();
             jFiles.add(jFile);
-            List<String> options = new ArrayList<>();
-            options.add("-encoding");
-            options.add("UTF-8");
-            options.add("-classpath");
-            options.add(classpath);
-            options.add("-d");
-            // javac编译结果输出到classFilePath目录中
-            options.add(classFilePath);
-            JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, options, null, jFiles);
+            //编译参数
+            List<String> options = Arrays.asList("-encoding", "UTF-8", "-cp", classpath, "-d", classFilePath);
+            JavaCompiler.CompilationTask task = SYSTEM_COMPILER.getTask(null, fileManager, null, options, null, jFiles);
             success = task.call();
         }
 
         if (!success) {
+            final List<?> diagnostics = diagnosticCollector.getDiagnostics();
+            System.out.println(diagnostics.stream().map(String::valueOf)
+                    .collect(Collectors.joining(System.lineSeparator())));
             return null;
         }
 

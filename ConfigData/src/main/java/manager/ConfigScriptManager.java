@@ -1,19 +1,17 @@
 package manager;
 
 import game.utils.ClassUtil;
+import io.github.classgraph.ClassGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.net.URL;
-import java.net.URLClassLoader;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author  gongshengjun
@@ -26,7 +24,7 @@ public class ConfigScriptManager {
     private String javaFilePath;        //java文件存放路径
     private String packageName;         //java文件所在的包名
     private String classpath;           //javac所需的classpath
-    private String classFilePath;       //javac输出class路径
+    private String classFileOutPath;       //javac输出class路径
 
     /**
      * 脚本更新时间
@@ -36,17 +34,21 @@ public class ConfigScriptManager {
     public ConfigScriptManager() {
         packageName = "cfg";
         javaFilePath = "config";
-        classFilePath = "bin";
-        File file = new File(classFilePath);
+        classFileOutPath = "bin";
+        File file = new File(classFileOutPath);
         if (!file.exists()) {
             file.mkdirs();
         }
         StringBuilder sb = new StringBuilder();
-        for (URL url : ((URLClassLoader) this.getClass().getClassLoader()).getURLs()) {
-            String p = url.getFile();
-            sb.append(p).append(File.pathSeparator);
-        }
-        sb.append(classFilePath);
+        List<URI> classpathURIs = new ClassGraph().scan().getClasspathURIs();
+        List<File> collect = classpathURIs.stream()
+                .filter(n -> !n.isOpaque())
+                .map(File::new)
+                .collect(Collectors.toList());
+        collect.forEach((classpathFile) -> {
+            sb.append(classpathFile.getAbsolutePath()).append(File.pathSeparator);
+        });
+        sb.append(classFileOutPath);
         this.classpath = sb.toString();
     }
 
@@ -122,7 +124,7 @@ public class ConfigScriptManager {
         try (InputStream inStream = new FileInputStream(f)) {
             byte[] bytes = new byte[(int) f.length()];
             inStream.read(bytes);
-            clazz = ClassUtil.javaCodeToObject(fullClassName, new String(bytes, StandardCharsets.UTF_8), classpath, classFilePath);
+            clazz = ClassUtil.javaCodeToObject(fullClassName, new String(bytes, StandardCharsets.UTF_8), classpath, classFileOutPath);
         }
         if (clazz == null) {
             logger.error("加载配置表: [{}], 读取class失败, reload失败!", className);
