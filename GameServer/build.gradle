@@ -25,6 +25,7 @@ dependencies {
     implementation 'redis.clients:jedis:3.6.0'
     implementation 'com.lmax:disruptor:3.4.3'
     implementation 'com.google.guava:guava:30.0-jre'
+    implementation 'org.apache.kafka:kafka-clients:3.1.0'
 
     mybatisGenerator 'org.mybatis.generator:mybatis-generator-core:1.4.0'
     mybatisGenerator 'mysql:mysql-connector-java:8.0.24'
