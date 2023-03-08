@@ -79,7 +79,7 @@ public abstract class ScriptAbstractManager {
             sb.append(p).append(File.pathSeparator);
         }
         sb.append(classFilePath);
-        this.classpath = sb.toString();
+        this.classpath = sb.toString().replace("%20", " ");
     }
 
     /**

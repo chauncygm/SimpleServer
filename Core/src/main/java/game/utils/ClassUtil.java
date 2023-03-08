@@ -42,7 +42,7 @@ public class ClassUtil {
         ScriptClassLoader loader = new ScriptClassLoader();
         boolean success;
         final DiagnosticCollector<? super JavaFileObject> diagnosticCollector = new DiagnosticCollector<>();
-        try (StandardJavaFileManager fileManager = SYSTEM_COMPILER.getStandardFileManager(null, null, null)) {
+        try (StandardJavaFileManager fileManager = SYSTEM_COMPILER.getStandardFileManager(diagnosticCollector, null, null)) {
             JavaFileObject jFile = new JavaSourceFromString(name, code);
             List<JavaFileObject> jFiles = new ArrayList<>();
             jFiles.add(jFile);
