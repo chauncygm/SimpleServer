@@ -1,0 +1,4 @@
+# 本身可以使用properties文件定义，此处使用yaml配置方式，更方便查看
+app-info:
+    id: 36589741
+    name: spring.boot.service
