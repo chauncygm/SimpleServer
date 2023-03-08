@@ -10,13 +10,26 @@ buildscript {
 
 plugins {
     id 'idea'
+    id 'application'        //运行main程序插件
+}
+
+idea{
+    module{
+        downloadJavadoc = true
+        downloadSources = true
+    }
 }
 
 tasks.withType(JavaCompile) {
     //@See https://docs.gradle.org/current/userguide/performance.html#suggestions_for_java_projects
     options.fork = true             //启用独立后台进程编译
     options.incremental = true      //启用增量编译
+    options.encoding = "UTF-8"      //设置编码
 }
+tasks.withType(Javadoc) {
+    options.encoding = "UTF-8"
+}
+
 
 //描述信息
 description = 'The shared API for the application'

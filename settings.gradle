@@ -3,5 +3,6 @@
  */
 
 rootProject.name = 'Server'
-include 'Core', 'Message', 'Client', 'ConfigData', 'ConfigTool', 'GameServer'
+include 'Core', 'Message', 'Client', 'ConfigData', 'ConfigTool', 'GameServer', 'HttpService'
+include 'Utils'
 

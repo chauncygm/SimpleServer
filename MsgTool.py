@@ -11,7 +11,7 @@ from string import Template
 from pathlib import Path
 
 #protoc参数
-protoSerchPath = "../proto/"
+protoSearchPath = "../proto/"
 targetProtoFile = "../proto/*.proto"
 javaOutPath = "Message/src/main/java/"
 
