@@ -14,8 +14,12 @@ import utils.RegexUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.*;
+
+import static utils.ExcelUtil.getCellVal;
 
 /**
  * @author  gongshengjun
@@ -47,13 +51,13 @@ public class ExcelReader {
                 continue;
             }
             if (!file.exists() || !file.canRead()) {
-                log.error("文件无法访问：" + file.getAbsolutePath());
+                log.error("can't read file：" + file.getAbsolutePath());
                 throw new Exception();
             }
             int id = Integer.parseInt(file.getName().split("_")[0]);
             String name = file.getName().split("_")[1];
             if (idNames.containsKey(id) || idNames.containsValue(name)) {
-                log.error("重复的id或名字：{}, {}", id, name);
+                log.error("repeated id or name：{}, {}", id, name);
                 throw new Exception();
             }
             idNames.put(id, name);
@@ -61,7 +65,7 @@ public class ExcelReader {
             ExcelInfo info = new ExcelInfo(id, name, file.getAbsolutePath());
             long t1 = System.currentTimeMillis();
             String fileName = info.getId() + "_" + info.getName();
-            log.info("开始解析配置表：{}", fileName);
+            log.info("start resolve excel：{}", fileName);
 
             if (info.getName().contains("global")) {
                 loadGlobal(info);
@@ -75,15 +79,15 @@ public class ExcelReader {
             list.add(info);
 
             long t2 = System.currentTimeMillis();
-            log.info("解析配置表{}完成，共花费{}ms", fileName, t2 - t1);
+            log.info("resolve {} finish, spend {}ms", fileName, t2 - t1);
         }
     }
 
     public void loadGlobal(ExcelInfo info) throws Exception {
 
-        XSSFWorkbook workbook = new XSSFWorkbook(new FileInputStream(info.getPath()));
+        XSSFWorkbook workbook = new XSSFWorkbook(Files.newInputStream(Paths.get(info.getPath())));
         if (workbook.getNumberOfSheets() < 1) {
-            throw new Exception("配置表表格不存在：" + info.getPath());
+            throw new Exception("excel not exist：" + info.getPath());
         }
         XSSFSheet sheet = workbook.getSheetAt(0);
         int rows = sheet.getLastRowNum() + 1;
@@ -117,9 +121,9 @@ public class ExcelReader {
     public void readExcel(ExcelInfo info) throws Exception{
 
         String fileName = info.getId() + "_" + info.getName();
-        XSSFWorkbook workbook = new XSSFWorkbook(new FileInputStream(info.getPath()));
+        XSSFWorkbook workbook = new XSSFWorkbook(Files.newInputStream(Paths.get(info.getPath())));
         if (workbook.getNumberOfSheets() < 1) {
-            throw new Exception("配置表表格不存在：" + info.getPath());
+            throw new Exception("excel not exist：" + info.getPath());
         }
         XSSFSheet sheet = workbook.getSheetAt(0);
 
@@ -175,7 +179,7 @@ public class ExcelReader {
                     }
                 } catch (Exception e) {
                     String cellName = (j + 1) / 26 > 0 ? (char)(64 + (j + 1) / 26) + "" + (char)(65 + j % 26) : "" + (char)(65 + j % 26);
-                    log.error(String.format("加载%ss失败, 第%d行%s列：%s", fileName, curRow + 1, cellName, "\"" + content + "\""), e);
+                    log.error(String.format("load %s failed, row: %d, col: %s：%s", fileName, curRow + 1, cellName, "\"" + content + "\""), e);
                     throw new Exception();
                 }
             }
@@ -208,7 +212,7 @@ public class ExcelReader {
      */
     private void checkIdRepeat(int id) throws Exception{
         if (ID_SET.contains(id)) {
-            throw new Exception("存在Id重复的序列：" + id);
+            throw new Exception("repeated id : " + id);
         }
         ID_SET.add(id);
     }
@@ -218,7 +222,7 @@ public class ExcelReader {
      */
     private void checkNameRepeat(String name) throws Exception{
         if (NAME_SET.contains(name)) {
-            throw new Exception("存在重复的字段名：" + name);
+            throw new Exception("repeated field : " + name);
         }
         NAME_SET.add(name);
     }
@@ -247,7 +251,7 @@ public class ExcelReader {
                 parseType(columnInfo, content.trim());
                 break;
             default:
-                throw new Exception("未知的类型:" + type);
+                throw new Exception("unknown type : " + type);
         }
     }
 
@@ -271,7 +275,7 @@ public class ExcelReader {
             }
         }
         if (columnInfo.getWrapType() == null || columnInfo.getBaseType() == null) {
-            throw new Exception("解析字段类型错误, 类型:" + content);
+            throw new Exception("resolve field type error, type:" + content);
         }
 
         String baseTypeStr = columnInfo.getBaseType().getWrapValue();
@@ -356,36 +360,6 @@ public class ExcelReader {
             content += isLong ? "L" : "";
         }
         rowData.add(content);
-    }
-
-    /**
-     * 取得数据表格的字符串值
-     *
-     * @param cell excel格子
-     * @return 字符串内容
-     */
-    private String getCellVal(XSSFCell cell) {
-        String cellValue = "";
-        if(cell == null){
-            return cellValue;
-        }
-        switch (cell.getCellType()) {
-            case STRING:
-                cellValue = cell.getStringCellValue();
-                break;
-            case NUMERIC:
-                cellValue = new DecimalFormat("#.###").format(cell.getNumericCellValue());
-                break;
-            case BOOLEAN:
-                cellValue = cell.getBooleanCellValue() + "";
-                break;
-            case FORMULA:
-                cellValue = cell.getCTCell().getV();
-                break;
-            default:
-                break;
-        }
-        return cellValue.trim();
     }
 
     /**

@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
  */
 public class RegexUtils {
 
-    private static final Pattern NUMBER_REG = Pattern.compile("^(-)?(0|[1-9][0-9]*)$");
+    private static final Pattern NUMBER_REG = Pattern.compile("^(-)?(0|[1-9]\\d*)$");
     private static final Pattern FLOAT_REG = Pattern.compile("^(-)?(\\d+)(\\.\\d+)?$");
 
     public static boolean match(String regex, String source) {

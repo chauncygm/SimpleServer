@@ -21,9 +21,9 @@ public enum BaseType {
     /**
      * 基本类型配置值
      */
-    String value;
+    final String value;
 
-    String wrapValue;
+    final String wrapValue;
 
     BaseType(String value, String wrapValue) {
         this.value = value;
